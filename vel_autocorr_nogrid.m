@@ -1,5 +1,4 @@
 function vel_autocorr_nogrid(fname)
-%
 % Autocorrelation of cell velocity data. The data do not have to be on a
 % uniform grid and do not need to cover the entire field of view. This
 % script requires a mat file containing cell trajectories.
@@ -40,20 +39,20 @@ function vel_autocorr_nogrid(fname)
 %   time points. If you were interested in changes in correlation distance
 %   over time, you'd have to move the code for correlation distance into
 %   the for loop.
-
 %
 % Written by Jacob Notbohm, University of Wisconsin-Madison 2020-2021
 %
 
+arguments
+    % Name of mat file containing cell trajectories and tractions
+    fname = 'cell_trajectories_tstart_end.mat';
+end
 
 % clear;
 close all;
 clc;
 
 %% --- USER INPUTS ---
-
-% Name of mat file containing cell trajectories and tractions
-% fname = 'cell_trajectories.mat';
 
 % Number of points at which to compute the autocorrelation. This gives the
 % length of the autocorrelation vector. Obviously, fewer points means the
