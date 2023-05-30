@@ -1,4 +1,33 @@
-function compute_cell_trajectories
+function compute_cell_trajectories(DICname, domainname, cellname, fd, isisland, savename, thr)
+    arguments
+        % Name of displacment data to load
+        DICname = 'cells_DIC_results_w0=16.mat';
+        % Name of domain. This is where cells are located. The domain comes from 
+        % running find_boundary.m. Set to [] if no domain
+        domainname = 'domain.tif';
+        % Name of file containing phase contrast images used for correlation. Use a
+        % multipage tif format to save multiple images over time as one file. 
+        % Use * for wild, and the code will open the first image matching the given 
+        % format
+        cellname = 'cells.tif';
+        % Factor by which to downsample data. (Need to be careful here -- final
+        % number of grid points should match number of cells.) Must be positive
+        % integer.
+        fd = 2;
+        
+        % State whether geometry is an island. Set this to 1 if yes. For island
+        % geometry, code will set origin to be the center of the island
+        isisland = 0;
+        
+        % Name to save data
+        savename = 'cell_trajectories_tstart_end.mat';
+        
+        % Threshold to reject spurious displacement data. Any incremental 
+        % displacement data greater than this value is set to nan. Use a large 
+        % value to avoid thresholding.
+        % Note that units here are um, whereas in some other code units are um/min
+        thr = 15; % um
+    end
 % compute_cell_trajectories
 %
 % Compute pathlines for cell trajectories based on cell displacements
@@ -22,6 +51,7 @@ function compute_cell_trajectories
 %   median subtraction is commented out.
 % 
 % Written by Jacob Notbohm, University of Wisconsin-Madison, 2014-2021
+% Adaptations by Frank Charbonier, Stanford University, 2023
 
 % clear;
 close all;
@@ -29,41 +59,21 @@ clc;
 
 
 %% --- USER INPUTS ---
-% Name of displacment data to load
-DICname = 'DIC_results_w0=64_inc.mat';
-% Name of domain. This is where cells are located. The domain comes from 
-% running find_boundary.m. Set to [] if no domain
-domainname = 'domain01.tif';
-
-% Factor by which to downsample data. (Need to be careful here -- final
-% number of grid points should match number of cells.) Must be positive
-% integer.
-fd = 2;
-
-% State whether geometry is an island. Set this to 1 if yes. For island
-% geometry, code will set origin to be the center of the island
-isisland = 0;
 % Choose starting and ending time points for analysis. Enter
 % empty array [] to begin at first time point and/or end at last time point
-% tstart = 1;
+% tstart = [];
 % tend = [];
 tstart_end = load('time_points_start_end.txt');
-tstart = tstart_end(1);
+if isnan(tstart_end(1))
+    tstart = [];
+else
+    tstart = tstart_end(1);
+end
 if isnan(tstart_end(2))
     tend = [];
 else
     tend = tstart_end(2);
 end
-
-% Threshold to reject spurious displacement data. Any incremental 
-% displacement data greater than this value is set to nan. Use a large 
-% value to avoid thresholding.
-% Note that units here are um, whereas in some other code units are um/min
-thr = 15; % um
-
-% Name to save data
-savename = 'cell_trajectories_tstart_end.mat';
-
 
 %% --- GET TRAJECTORIES ---
 
@@ -254,9 +264,9 @@ for k= tstart:tend
 %     uave = mean( u_tmp(idx) );
 %     vave = mean( v_tmp(idx) );
     
-%     % Correct for drift by subtracting off medians
-%     uave = nanmedian(u_cell_k(:));
-%     vave = nanmedian(v_cell_k(:));
+    % Correct for drift by subtracting off medians
+    uave = nanmedian(u_cell_k(:));
+    vave = nanmedian(v_cell_k(:));
 
     % No drift correction [default]
     uave=0; vave=0;
@@ -293,13 +303,13 @@ if isfile('TimeIncrement.txt')
     % Get trajectories for which a time point is nan and remove
     I = any(isnan(speed),2);
     speed2 = speed(~I,:);
-    ave_speed = nanmean(speed2(:));
+    ave_speed = 60 * nanmean(speed2(:));
 end
 
 
 %% --- SAVE DATA ---
 if isfile('TimeIncrement.txt')
-    save(savename,'traj_x','traj_y','ave_speed'); % Units: um; um/min
+    save(savename,'traj_x','traj_y','ave_speed'); % Units: um; um/hr
 else
     save(savename,'traj_x','traj_y'); % Units: um
 end
