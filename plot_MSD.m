@@ -1,4 +1,20 @@
-function plot_MSD(trajname)
+function plot_MSD(trajname, nstart, nend, savename_plot, savename_data, invisible)
+    arguments
+        % Name of data containing cell trajectories
+        trajname = 'cell_trajectories_tstart_end.mat';
+        % Choose time points to use in the analysis. Select timepoints as a
+        % fraction as the total number of time points available, where 0
+        % corresponds to the first time point and 1 corresponds to the last time
+        % point.
+        nstart = 0;
+        nend = 1;
+        % Name to save plot 
+        savename_plot = 'MSD_plot';
+        % Name to save data 
+        savename_data = 'MSD_Data.mat';
+        % Set to [] to make figure visible. Set to 1 to make figure invisible.
+        invisible = 1;
+    end
 % 
 % Mean square displacement following trajectories from DIC data. Before
 % running this script, run compute_cell_trajectories.m.
@@ -21,29 +37,11 @@ function plot_MSD(trajname)
 %   it could be done using a domain image to determine the free edge.
 %
 % Written by Jacob Notbohm, University of Wisconsin-Madison, 2014-2021
-% 
+% Adapted by Frank Charbonier, Stanford University, 2023
 
 % clear;
 close all;
 clc;
-
-%% --- USER INPUTS ---
-
-% % Name of data containing cell trajectories
-trajname = 'cell_trajectories.mat';
-
-% Choose time points to use in the analysis. Select timepoints as a
-% fraction as the total number of time points available, where 0
-% corresponds to the first time point and 1 corresponds to the last time
-% point.
-nstart = 0;
-nend = 1;
-
-% Name to save plot 
-savename_plot = 'MSD_plot';
-% Name to save data 
-savename_data = 'MSD_Data.mat';
-
 
 %% --- LOAD DATA ---
 
@@ -120,6 +118,9 @@ MSD_mean = mean(MSD,1);
 dt = (1:K-1)*time_increment; % units: min
 
 hf1 = make_fig([0.5 1 .6 .6]);
+if invisible
+        set(hf1,'visible','off');
+end
 
 hold on
 plot(dt,MSD_mean,'b','linewidth',2);
