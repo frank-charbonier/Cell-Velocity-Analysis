@@ -50,7 +50,7 @@ end
 
 % clear;
 close all;
-clc;
+% clc;
 
 %% --- USER INPUTS ---
 

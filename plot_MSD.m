@@ -41,7 +41,7 @@ function plot_MSD(trajname, nstart, nend, savename_plot, savename_data, invisibl
 
 % clear;
 close all;
-clc;
+% clc;
 
 %% --- LOAD DATA ---
 
