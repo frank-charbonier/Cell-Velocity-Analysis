@@ -1,7 +1,7 @@
 function compute_cell_trajectories(DICname, domainname, cellname, fd, isisland, savename, thr)
     arguments
         % Name of displacment data to load
-        DICname = 'cells_DIC_results_w0=16.mat';
+        DICname = 'cells_DIC_results.mat';
         % Name of domain. This is where cells are located. The domain comes from 
         % running find_boundary.m. Set to [] if no domain
         domainname = 'domain.tif';
@@ -55,7 +55,7 @@ function compute_cell_trajectories(DICname, domainname, cellname, fd, isisland, 
 
 % clear;
 close all;
-clc;
+% clc;
 
 
 %% --- USER INPUTS ---
