@@ -24,7 +24,7 @@ function plot_cell_trajectories(traj_name, nstart, nend, savename, invisible)
 
 % clear;
 close all;
-clc;
+% clc;
 
 
 %% --- USER INPUTS ---
