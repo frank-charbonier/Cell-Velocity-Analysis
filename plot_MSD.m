@@ -1,4 +1,4 @@
-function plot_MSD(trajname, nstart, nend, savename_plot, savename_data, invisible)
+function plot_MSD(trajname, nstart, nend, time_increment, savename_plot, savename_data, invisible)
     arguments
         % Name of data containing cell trajectories
         trajname = 'cell_trajectories_tstart_end.mat';
@@ -8,6 +8,8 @@ function plot_MSD(trajname, nstart, nend, savename_plot, savename_data, invisibl
         % point.
         nstart = 0;
         nend = 1;
+        % Time increment
+        time_increment = 10; % min
         % Name to save plot 
         savename_plot = 'MSD_plot';
         % Name to save data 
@@ -44,14 +46,6 @@ close all;
 % clc;
 
 %% --- LOAD DATA ---
-
-% Get time between images
-% % copyfile('../TimeIncrement.txt','TimeIncrement.txt');
-fid = fopen('TimeIncrement.txt');
-txtcell = cell2mat(textscan(fid,'%f %*[^\n]')); % '%*[^\n]' skips the remainder of each line
-time_increment = txtcell(1); % min
-fclose(fid);
-
 load(trajname); % Units: um
 
 %% --- COMPUTE MSD ---
