@@ -2,8 +2,6 @@ function compute_cell_trajectories(DICname, domainname, cellname, pix_size, tsta
 % Compute pathlines for cell trajectories based on cell displacements
 % calculated from image correlation.
 %
-% 
-% 
 % Several important notes:
 % - A domain file is needed for at least the first time point. It's possible
 %   that results will be more accurate if you have a domain file for all
@@ -227,25 +225,6 @@ for k= tstart:tend
     traj_x(:,k-tstart+2) = traj_x(:,k-tstart+1) + displ_x; % Units: um
     traj_y(:,k-tstart+2) = traj_y(:,k-tstart+1) + displ_y;
 end
-
-
-%% --- IF THERE'S A TIME INCREMENT FILE, THEN ADD VELOCITY DATA ---
-
-% % Get time between images
-% if isfile('TimeIncrement.txt')
-%     fid = fopen('TimeIncrement.txt');
-%     txtcell = cell2mat(textscan(fid,'%f %*[^\n]')); % '%*[^\n]' skips the remainder of each line
-%     time_increment = txtcell(1); % min
-%     fclose(fid);
-% 
-%     dtx = traj_x(:,2:end)-traj_x(:,1:end-1);
-%     dty = traj_y(:,2:end)-traj_y(:,1:end-1);
-%     speed = sqrt(dtx.^2 + dty.^2)/time_increment; % um/min
-%     % Get trajectories for which a time point is nan and remove
-%     I = any(isnan(speed),2);
-%     speed2 = speed(~I,:);
-%     ave_speed = 60 * nanmean(speed2(:));
-% end
 
 dtx = traj_x(:,2:end)-traj_x(:,1:end-1);
 dty = traj_y(:,2:end)-traj_y(:,1:end-1);
