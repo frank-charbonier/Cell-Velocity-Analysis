@@ -1,55 +1,20 @@
-function compute_cell_trajectories(DICname, domainname, cellname, fd, isisland, savename, thr)
-    arguments
-        % Name of displacment data to load
-        DICname = 'cells_DIC_results.mat';
-        % Name of domain. This is where cells are located. The domain comes from 
-        % running find_boundary.m. Set to [] if no domain
-        domainname = 'domain.tif';
-        % Name of file containing phase contrast images used for correlation. Use a
-        % multipage tif format to save multiple images over time as one file. 
-        % Use * for wild, and the code will open the first image matching the given 
-        % format
-        cellname = 'cells.tif';
-        % Factor by which to downsample data. (Need to be careful here -- final
-        % number of grid points should match number of cells.) Must be positive
-        % integer.
-        fd = 2;
-        
-        % State whether geometry is an island. Set this to 1 if yes. For island
-        % geometry, code will set origin to be the center of the island
-        isisland = 0;
-        
-        % Name to save data
-        savename = 'cell_trajectories_tstart_end.mat';
-        
-        % Threshold to reject spurious displacement data. Any incremental 
-        % displacement data greater than this value is set to nan. Use a large 
-        % value to avoid thresholding.
-        % Note that units here are um, whereas in some other code units are um/min
-        thr = 15; % um
-    end
-% compute_cell_trajectories
-%
+function compute_cell_trajectories(DICname, domainname, cellname, pix_size, tstart, tend, time_increment, fd, isisland, savename, thr)
 % Compute pathlines for cell trajectories based on cell displacements
 % calculated from image correlation.
 %
-% Algorithm adapted from a code written by Chan Young Park, Harvard School
-% of Public Health, 2012
 % 
-% If running as a batch, uncomment the statement function at the top and
-% comment the clear command
 % 
 % Several important notes:
 % - A domain file is needed for at least the first time point. It's possible
 %   that results will be more accurate if you have a domain file for all
 %   time points. Get the domain file by running find_boundaries.m
-% - The file ExperimentalSettings.txt, which is used in running traction
-%   analysis is required. This file is used to get the pixel size.
 % - There's a section that performs drift correction by subtracting the
 %   median, which may or may not work for your application. Take a look at 
 %   the comments, and test whether this improves your data. By default, the
 %   median subtraction is commented out.
 % 
+% Algorithm adapted from a code written by Chan Young Park, Harvard School
+% of Public Health, 2012
 % Written by Jacob Notbohm, University of Wisconsin-Madison, 2014-2021
 % Adaptations by Frank Charbonier, Stanford University, 2023
 
@@ -57,31 +22,7 @@ function compute_cell_trajectories(DICname, domainname, cellname, fd, isisland, 
 close all;
 % clc;
 
-
-%% --- USER INPUTS ---
-% Choose starting and ending time points for analysis. Enter
-% empty array [] to begin at first time point and/or end at last time point
-% tstart = [];
-% tend = [];
-tstart_end = load('time_points_start_end.txt');
-if isnan(tstart_end(1))
-    tstart = [];
-else
-    tstart = tstart_end(1);
-end
-if isnan(tstart_end(2))
-    tend = [];
-else
-    tend = tstart_end(2);
-end
-
 %% --- GET TRAJECTORIES ---
-
-% Get pixel size from experimental settings file
-fid = fopen('ExperimentalSettings.txt');
-txtcell = cell2mat(textscan(fid,'%f %*[^\n]')); % '%*[^\n]' skips the remainder of each line
-pix_size = txtcell(1)*1e6; % Pixel size, um
-
 % Load data
 load(DICname);
 % Rename variables associated with cell displacements so they aren't
@@ -290,28 +231,34 @@ end
 
 %% --- IF THERE'S A TIME INCREMENT FILE, THEN ADD VELOCITY DATA ---
 
-% Get time between images
-if isfile('TimeIncrement.txt')
-    fid = fopen('TimeIncrement.txt');
-    txtcell = cell2mat(textscan(fid,'%f %*[^\n]')); % '%*[^\n]' skips the remainder of each line
-    time_increment = txtcell(1); % min
-    fclose(fid);
-    
-    dtx = traj_x(:,2:end)-traj_x(:,1:end-1);
-    dty = traj_y(:,2:end)-traj_y(:,1:end-1);
-    speed = sqrt(dtx.^2 + dty.^2)/time_increment; % um/min
-    % Get trajectories for which a time point is nan and remove
-    I = any(isnan(speed),2);
-    speed2 = speed(~I,:);
-    ave_speed = 60 * nanmean(speed2(:));
-end
+% % Get time between images
+% if isfile('TimeIncrement.txt')
+%     fid = fopen('TimeIncrement.txt');
+%     txtcell = cell2mat(textscan(fid,'%f %*[^\n]')); % '%*[^\n]' skips the remainder of each line
+%     time_increment = txtcell(1); % min
+%     fclose(fid);
+% 
+%     dtx = traj_x(:,2:end)-traj_x(:,1:end-1);
+%     dty = traj_y(:,2:end)-traj_y(:,1:end-1);
+%     speed = sqrt(dtx.^2 + dty.^2)/time_increment; % um/min
+%     % Get trajectories for which a time point is nan and remove
+%     I = any(isnan(speed),2);
+%     speed2 = speed(~I,:);
+%     ave_speed = 60 * nanmean(speed2(:));
+% end
+
+dtx = traj_x(:,2:end)-traj_x(:,1:end-1);
+dty = traj_y(:,2:end)-traj_y(:,1:end-1);
+speed = sqrt(dtx.^2 + dty.^2)/time_increment; % um/min
+% Get trajectories for which a time point is nan and remove
+I = any(isnan(speed),2);
+speed2 = speed(~I,:);
+ave_speed = 60 * nanmean(speed2(:)); %um/hr
+
 
 
 %% --- SAVE DATA ---
-if isfile('TimeIncrement.txt')
-    save(savename,'traj_x','traj_y','ave_speed'); % Units: um; um/hr
-else
-    save(savename,'traj_x','traj_y'); % Units: um
+save(savename,'traj_x','traj_y','ave_speed'); % Units: um; um/hr
 end
 
 
