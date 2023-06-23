@@ -43,11 +43,6 @@ function vel_autocorr_nogrid(fname)
 % Written by Jacob Notbohm, University of Wisconsin-Madison 2020-2021
 %
 
-arguments
-    % Name of mat file containing cell trajectories and tractions
-    fname = 'cell_trajectories_tstart_end.mat';
-end
-
 % clear;
 close all;
 % clc;
