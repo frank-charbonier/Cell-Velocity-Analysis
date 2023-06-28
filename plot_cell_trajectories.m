@@ -9,7 +9,7 @@ function plot_cell_trajectories(traj_name, nstart, nend, savename, invisible)
         nstart = 0;
         nend = 1;
         % Name to save plot 
-        savename = 'Trajectories';
+        savename = "Trajectories";
         % Set to [] to make figure visible. Set to 1 to make figure invisible.
         invisible = 1;
     end
@@ -94,7 +94,8 @@ end
 % set(gca,'xtick',[-500:250:500],'ytick',[-500:250:500]);
 
 set(hf,'Paperpositionmode','auto');
-print('-dpng','-r300',savename);
+full_savename = savename + "_" + nstart + "-" + nend + ".png";
+print('-dpng','-r300',full_savename);
 
 % Option: Save as eps
 % print('-depsc',savename);
