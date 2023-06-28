@@ -175,8 +175,9 @@ for k= tstart:tend
     % --- Remove displacements that are too large ---
     % Also include a threshold based on size of image
     xymax = sqrt(max(x_cell(:))*max(y_cell(:))); % Typical image size. Units: um
-    % Threshold for velocity data
-    idx = (abs(u_cell_k)>thr) | (abs(v_cell_k)>thr) | abs(u_cell_k)>0.1*xymax | abs(v_cell_k)>0.1*xymax;
+    % Threshold for velocity data, convert from um/min to um
+    disp_thr = thr * time_increment;
+    idx = (abs(u_cell_k)>disp_thr) | (abs(v_cell_k)>disp_thr) | abs(u_cell_k)>0.1*xymax | abs(v_cell_k)>0.1*xymax;
     u_cell_k(idx) = nan;
     v_cell_k(idx) = nan;
     u_cell_k = inpaint_nans(u_cell_k);
