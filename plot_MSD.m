@@ -139,7 +139,8 @@ annotation(hf1,'textbox',[0.15 0.9 0.6 0.03],...
 %     'String',{pwd},'FitBoxToText','off','fontsize',8,'linestyle','none','interpreter','none');
 
 % Save figure
-print('-dpng','-r300',savename_plot);
+full_savename_plot = savename_plot + "_" + nstart + "-" + nend + ".png";
+print('-dpng','-r300',full_savename_plot);
 % % Option to save as eps
 % print('-depsc',savename_plot);
 % Option to save in a different directory. Need to make sure that the
@@ -149,8 +150,8 @@ print('-dpng','-r300',savename_plot);
 % print('-dpng','-r300',['../MSD/pos',curdir(end-1:end)]);
 
 %% --- SAVE MSD EXPONENT AND PATH RATIO DATA ---
-
-save(savename_data,'n','dt','MSD_mean');
+full_savename_data = savename_data + "_" + nstart + "-" + nend;
+save(full_savename_data,'n','dt','MSD_mean');
 % Outputs:
 %   n: MSD exponent
 %   dt: MSD delta t (min)
