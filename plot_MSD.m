@@ -13,7 +13,7 @@ function plot_MSD(trajname, nstart, nend, time_increment, savename_plot, savenam
         % Name to save plot 
         savename_plot = 'MSD_plot';
         % Name to save data 
-        savename_data = 'MSD_Data.mat';
+        savename_data = 'MSD_Data';
         % Set to [] to make figure visible. Set to 1 to make figure invisible.
         invisible = 1;
     end
@@ -150,7 +150,7 @@ print('-dpng','-r300',full_savename_plot);
 % print('-dpng','-r300',['../MSD/pos',curdir(end-1:end)]);
 
 %% --- SAVE MSD EXPONENT AND PATH RATIO DATA ---
-full_savename_data = savename_data + "_" + nstart + "-" + nend;
+full_savename_data = savename_data + "_" + nstart + "-" + nend + ".mat";
 save(full_savename_data,'n','dt','MSD_mean');
 % Outputs:
 %   n: MSD exponent
