@@ -94,8 +94,9 @@ end
 % set(gca,'xtick',[-500:250:500],'ytick',[-500:250:500]);
 
 set(hf,'Paperpositionmode','auto');
-full_savename = savename + "_" + nstart + "-" + nend + ".png";
+full_savename = savename + "_" + nstart + "-" + nend;
 print('-dpng','-r300',full_savename);
+print('-dtiff','-r300', full_savename);
 
 % Option: Save as eps
 % print('-depsc',savename);
